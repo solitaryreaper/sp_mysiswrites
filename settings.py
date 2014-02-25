@@ -49,9 +49,6 @@ MIDDLEWARE_CLASSES = (
 
 ROOT_URLCONF = 'mysiswrites.urls'
 
-WSGI_APPLICATION = 'mysiswrites.wsgi.application'
-
-
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
 
