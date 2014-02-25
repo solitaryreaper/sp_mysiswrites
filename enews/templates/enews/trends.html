@@ -1,0 +1,146 @@
+<html>
+    <head>
+       <title>Barkha writes ..</title>
+        <link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.3.2/css/bootstrap.min.css" rel="stylesheet">
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js" type="text/javascript"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>       
+        
+        <script src="//cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.9.1/jquery.tablesorter.min.js" type="text/javascript"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/highcharts/3.0.9/highcharts.js" type="text/javascript"></script>
+                
+    </head>
+    <body>
+	    <header class="well">
+	        <h1 align="center"><a href="/enews/"><b>A tryst with journalism ..</b></a></h1>
+	    </header>
+    <div class="navbar container">  
+        <div class="navbar-inner">  
+            <div>
+                <ul class="nav">
+                     <li><a href="http://www.linkedin.com/pub/barkha-kumari/14/994/82a" target="_blank"><b>About Me</b></a></li>                
+                     <li><a href="/enews/"><b>Dashboard</b></a></li>
+                     <li class="active"><a href="/enews/trends"><b>Trends</b></a></li>
+                     <li><a href="/enews/feed" target="_blank"><img src="http://www.imanageproject.com/images/feed_icon_small.png"></img><b>News Feed</b></a></li>                     
+                </ul>
+            </div>  
+        </div>  
+    </div>
+    <!-- Charts go here -->
+    <div>
+    <table width="100%">
+        <tr>
+            <td><div align="right" id="category_chart" style="width: 600px; height: 500px; margin: 0 auto"></div></td>
+            <td><div align="left" id="timeline_chart" style="width: 600px; height: 500px; margin: 0 auto"></div></td>
+        </tr>
+    </table>    
+    </div>
+    </body>
+    
+	<script type="text/javascript">
+	$(document).ready(function() {
+	    // Number of news articles by category
+	     var articlesByCategoryOptions = {
+	        chart: {
+	            renderTo: 'category_chart',
+	            type: 'bar',
+	        },
+	        legend: {enabled: false},
+	        title: {text: 'Articles by Category'},
+	        subtitle: {text: 'Source:http://www.deccanchronicle.com/'},
+	        xAxis: {title: {text: null}},
+            yAxis: {
+                min: 0,
+                title: {
+                    text: 'Number of Articles',
+                    align: 'high'
+                },
+                labels: {
+                    overflow: 'justify'
+                }
+            },
+	        series: [{}],
+	    };
+	
+	    var chartDataUrl = "{% url 'categorystats' %}";
+	    $.getJSON(chartDataUrl,
+	        function(data) {
+	    	    articlesByCategoryOptions.xAxis.categories = data['categories'];
+	    	    articlesByCategoryOptions.series[0].name = 'Deccan Chronicle';
+	    	    articlesByCategoryOptions.series[0].data = data['num_articles'];
+	            var chart = new Highcharts.Chart(articlesByCategoryOptions);
+	    });
+	    
+	    // Number of news articles by year-month
+	    var articlesByYearMonthOptions = {
+    		chart: {
+                renderTo: 'timeline_chart',    			
+    		    zoomType: 'x',
+    		    spacingRight: 20
+    		},
+    		title: {
+    		    text: 'Articles by Timeline'
+    		},
+            subtitle: {
+                text: 'Source:http://www.deccanchronicle.com/'
+            },    		
+    		xAxis: {
+    		    type: 'datetime',
+    		    maxZoom: 30 * 24 * 3600000, // fourteen days
+    		    title: {
+    		        text: null
+    		    }
+    		},
+    		yAxis: {
+    		    title: {
+    		        text: 'Number of Articles'
+    		    }
+    		},
+    		tooltip: {
+    		    shared: true
+    		},
+    		legend: {
+    		    enabled: false
+    		},
+    		plotOptions: {
+    		    area: {
+    		        fillColor: {
+    		            linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1},
+    		            stops: [
+    		                [0, Highcharts.getOptions().colors[0]],
+    		                [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
+    		            ]
+    		        },
+    		        lineWidth: 1,
+    		        marker: {
+    		            enabled: false
+    		        },
+    		        shadow: false,
+    		        states: {
+    		            hover: {
+    		                lineWidth: 1
+    		            }
+    		        },
+    		        threshold: null
+    		    }
+    		},
+    		series: [{
+    		    type: 'area',
+    		    name: 'Articles by Timeline',
+    		    pointInterval: 30 * 24 * 3600 * 1000,
+    		    pointStart: Date.UTC(2012, 09, 30)
+    		}]	    		
+	    };
+	    
+        chartDataUrl = "{% url 'timelinestats' %}";
+        $.getJSON(chartDataUrl,
+            function(data) {
+        	    articlesByYearMonthOptions.series[0].name = 'Deccan Chronicle';
+        	    articlesByYearMonthOptions.series[0].data = data['num_articles'];
+                var chart = new Highcharts.Chart(articlesByYearMonthOptions);
+        });
+	    
+	} );
+	</script>
+
+   
+</html>

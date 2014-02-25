@@ -1,0 +1,11 @@
+*.pyc
+.project
+.pydevproject
+
+*.py[cod]
+# PyCharm
+.idea
+# Database
+*.db
+# Virtualenv
+venv/
