@@ -1,1 +1,1 @@
-web: python manage.py runserver 800
+web: gunicorn mysiswrites.wsgi
