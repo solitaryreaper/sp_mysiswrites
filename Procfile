@@ -1,1 +1,1 @@
-web: gunicorn mysiswrites.wsgi
+web: python manage.py runserver
