@@ -69,7 +69,8 @@ def parse_dc_article_page(url):
 def run_daily_update_job():
     print "Inside the daily update job .."
     top_article_links = parse_google_cs_api_json_results(GOOGLE_CS_BASE_URL + "&sort=date")
-    ingest_article_links(top_article_links)
+    result = ingest_article_links(top_article_links)
+    return result
 
 """
     A bootstrap job that fetches all the relevant articles and populates the database
@@ -98,16 +99,20 @@ def run_bootstrap_job():
     Ingest the articles and useful content into the database
 """
 def ingest_article_links(links):
+    num_new_articles_ingested = 0 
     for link in links:
         if not Article.objects.filter(url=link).exists():
             article = parse_dc_article_page(link)
             if article is not None:
                 article.save()
                 print "Successfully saved article for url : " + link
+                num_new_articles_ingested = num_new_articles_ingested + 1
             else:
                 print "Failed to parse URL " + link
         else:
             print "Article for URL " + link + " already exists .."
+            
+    return "New articles ingested : " + str(num_new_articles_ingested)
         
         
 if __name__ == '__main__':

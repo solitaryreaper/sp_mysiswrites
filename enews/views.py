@@ -65,8 +65,8 @@ def get_timeline_stats(request):
     return HttpResponse(json.dumps(data), content_type='application/json')    
 
 def dailyjob(request):
-    run_daily_update_job()
-    return HttpResponse("Ran the daily update job ..")
+    result = run_daily_update_job()
+    return HttpResponse("Ran the daily update job. Results : " + result)
 
 def bootstrapjob(request):
     run_bootstrap_job()
