@@ -11,7 +11,7 @@ from enews.services import run_daily_update_job, run_bootstrap_job, parse_dc_art
 
 # Retrieves all the news articles on the home page dashboard
 def index(request):
-    articles = Article.objects.all()
+    articles = set(Article.objects.all())
     context = RequestContext(request, {'articles': articles})
     return render(request, 'enews/index.html', context)    
 
@@ -23,7 +23,7 @@ def get_category_stats(request):
         Gets the count of all news articles by categories
     """
     category_stats = {}
-    for article in Article.objects.all():
+    for article in set(Article.objects.all()):
         categories = article.categories.split(",")
         for category in categories:
             category = category.strip()
@@ -46,7 +46,7 @@ def get_timeline_stats(request):
         Returns the number of articles per month
     """
     timeline_stats = {}
-    for article in Article.objects.all():
+    for article in set(Article.objects.all()):
         publish_date = article.publish_date
         year_month_str = str(publish_date.year)
         month = publish_date.month
@@ -58,19 +58,46 @@ def get_timeline_stats(request):
             timeline_stats[year_month_str] = 1
     
     num_articles = []
-    for key in sorted(timeline_stats):
-        num_articles.append(timeline_stats[key])
-        
-    data = {'num_articles': num_articles}                       
+
+    sorted_keys = sorted(timeline_stats.keys())
+    min_key = sorted_keys[0]
+    max_key = sorted_keys[-1]
+    min_year = int(min_key[:4])
+    max_year = int(max_key[:4])
+
+    all_sorted_keys = get_all_sorted_time_keys(min_year, max_year, min_key, max_key)
+    for key in all_sorted_keys:
+
+        if key in timeline_stats:
+            num_articles.append(timeline_stats[key])
+        else:
+            num_articles.append(0)
+
+    print "Articles : " + str(num_articles)
+    data = {'num_articles': num_articles}
     return HttpResponse(json.dumps(data), content_type='application/json')    
+
+def get_all_sorted_time_keys(min_year, max_year, min_key, max_key):
+    sorted_keys = []
+    months = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"]
+    for year in range(min_year, max_year + 1):
+        for month in months:
+            key = str(year) + str(month)
+            if key < min_key or key > max_key:
+                continue
+
+            sorted_keys.append(key)
+
+    print "Keys : " + str(sorted_keys)
+    return sorted_keys
 
 def dailyjob(request):
     result = run_daily_update_job()
     return HttpResponse("Ran the daily update job. Results : " + result)
 
 def bootstrapjob(request):
-    run_bootstrap_job()
-    return HttpResponse("Ran the bootstrap job ..")
+    result = run_bootstrap_job()
+    return HttpResponse("Ran the bootstrap job .." + result)
 
 def ingest(request, url):
     """

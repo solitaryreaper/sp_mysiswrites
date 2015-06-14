@@ -8,7 +8,10 @@ class Article(models.Model):
     snippet = models.CharField(max_length=1000) # snippet for news article
     publish_date = models.DateField()   # publication date of news article
     categories = models.CharField(max_length=100) # category of news article
-    
+
+    def __eq__(self, other):
+        return self.url == other.url
+
     def __str__(self):
         return self.title    
    

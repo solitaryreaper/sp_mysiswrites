@@ -83,6 +83,7 @@ def run_bootstrap_job():
     print "Inside the bootstrap update job .."
     article_start_index = 1
     are_results_over = False
+    total_articles_ingested = 0
     while not are_results_over:
         url = GOOGLE_CS_BASE_URL + "&start=" + str(article_start_index)
         print "Parsing for URL : " + url
@@ -93,7 +94,10 @@ def run_bootstrap_job():
             print "All articles ingested .."
             are_results_over = True
         else:
-            ingest_article_links(links)
+            output = ingest_article_links(links)
+            total_articles_ingested += output
+
+    return "Total articles ingested : " + str(total_articles_ingested)
 
 """
     Ingest the articles and useful content into the database
@@ -112,7 +116,7 @@ def ingest_article_links(links):
         else:
             print "Article for URL " + link + " already exists .."
             
-    return "New articles ingested : " + str(num_new_articles_ingested)
+    return num_new_articles_ingested
         
         
 if __name__ == '__main__':

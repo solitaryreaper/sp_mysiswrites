@@ -56,9 +56,24 @@ def parse_dc_article_page(url):
         print "Failed to parse URL : " + url + " : " + str(err)
     
     return article
-        
+
+def get_all_sorted_time_keys(min_year, max_year, min_key, max_key):
+    sorted_keys = []
+    months = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"]
+    for year in range(min_year, max_year + 1):
+        for month in months:
+            key = str(year) + str(month)
+            if key < min_key or key > max_key:
+                continue
+
+            sorted_keys.append(key)
+
+    print "Keys : " + str(sorted_keys)
+    return sorted_keys
+
 if __name__ == '__main__':
-    parse_dc_article_page('http://archives.deccanchronicle.com/130319/lifestyle-booksart/article/symbol-womb')
+    get_all_sorted_time_keys(2012, 2015, "201210", "201506")
+    #parse_dc_article_page('http://archives.deccanchronicle.com/130319/lifestyle-booksart/article/symbol-womb')
     #parse_dc_article_page('http://archives.deccanchronicle.com/130521/lifestyle-offbeat/article/%E2%80%98indians-are-not-copycats%E2%80%99-dr-krishna-m-ella')    
     #parse_dc_article_page('http://www.deccanchronicle.com/140106/news-current-affairs/article/horror-atm-0')
     #parse_dc_article_page('http://archives.deccanchronicle.com/130317/lifestyle-booksart/article/wood-you-it')
